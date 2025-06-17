@@ -56,6 +56,8 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.Entity<User>().Property(u => u.Id).IsRequired().ValueGeneratedOnAdd();
         builder.Entity<User>().Property(u => u.Username).IsRequired();
         builder.Entity<User>().Property(u => u.PasswordHash).IsRequired();
+        
+        // General Naming Convention for the database objects
         builder.UseSnakeCaseNamingConvention();
     }
 }
