@@ -1,4 +1,5 @@
 using ACME.LearningCenterPlatform.API.IAM.Domain.Model.Aggregates;
+using ACME.LearningCenterPlatform.API.IAM.Infrastructure.Persistence.EFC.Configuration.Extensions;
 using ACME.LearningCenterPlatform.API.Profiles.Infrastructure.Persistence.EFC.Configuration.Extensions;
 using ACME.LearningCenterPlatform.API.Publishing.Infrastructure.Persistence.EFC.Configuration.Extensions;
 using ACME.LearningCenterPlatform.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
@@ -51,11 +52,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.ApplyProfilesConfiguration();
         
         // IAM Context
-        
-        builder.Entity<User>().HasKey(u => u.Id);
-        builder.Entity<User>().Property(u => u.Id).IsRequired().ValueGeneratedOnAdd();
-        builder.Entity<User>().Property(u => u.Username).IsRequired();
-        builder.Entity<User>().Property(u => u.PasswordHash).IsRequired();
+        builder.ApplyIamConfiguration();
         
         // General Naming Convention for the database objects
         builder.UseSnakeCaseNamingConvention();
