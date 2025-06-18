@@ -17,6 +17,9 @@ namespace ACME.LearningCenterPlatform.API.Publishing.Application.Internal.Comman
 /// <param name="unitOfWork">
 ///     The <see cref="IUnitOfWork" /> to use.
 /// </param>
+/// <param name="domainEventPublisher">
+///   The <see cref="IMediator" /> to use for publishing domain events.
+/// </param>
 public class CategoryCommandService(ICategoryRepository categoryRepository, IUnitOfWork unitOfWork, IMediator domainEventPublisher)
     : ICategoryCommandService
 {
