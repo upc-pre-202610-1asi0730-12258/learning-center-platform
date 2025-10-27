@@ -150,7 +150,7 @@ builder.Services.AddScoped(typeof(ICommandPipelineBehavior<>), typeof(LoggingCom
 // Add Cortex Mediator for Event Handling
 builder.Services.AddCortexMediator(
     configuration: builder.Configuration,
-    handlerAssemblyMarkerTypes: new[] { typeof(Program) }, configure: options =>
+    handlerAssemblyMarkerTypes: [typeof(Program)], configure: options =>
     {
         options.AddOpenCommandPipelineBehavior(typeof(LoggingCommandBehavior<>));
         //options.AddDefaultBehaviors();
