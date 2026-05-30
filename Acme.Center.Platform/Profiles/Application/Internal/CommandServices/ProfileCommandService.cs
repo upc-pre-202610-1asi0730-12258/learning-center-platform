@@ -1,4 +1,5 @@
 using Acme.Center.Platform.Profiles.Application.CommandServices;
+using Acme.Center.Platform.Profiles.Domain.Model;
 using Acme.Center.Platform.Profiles.Domain.Model.Aggregates;
 using Acme.Center.Platform.Profiles.Domain.Model.Commands;
 using Acme.Center.Platform.Profiles.Domain.Repositories;
@@ -33,9 +34,9 @@ public class ProfileCommandService(
             await unitOfWork.CompleteAsync(cancellationToken);
             return Result<Profile>.Success(profile);
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            return Result<Profile>.Failure($"An error occurred while creating the profile: {e.Message}");
+            return Result<Profile>.Failure(ProfileErrors.ProfileCreationFailed);
         }
     }
 }

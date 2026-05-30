@@ -37,7 +37,7 @@ public class AuthenticationController(IUserCommandService userCommandService) : 
     {
         var signInCommand = SignInCommandFromResourceAssembler.ToCommandFromResource(signInResource);
         var result = await userCommandService.Handle(signInCommand, cancellationToken);
-        if (result.IsFailure) return BadRequest(result.Message);
+        if (result.IsFailure) return BadRequest(result.Error.Message);
         var authenticatedUser = result.Value;
         var resource =
             AuthenticatedUserResourceFromEntityAssembler.ToResourceFromEntity(authenticatedUser.user,
@@ -65,7 +65,7 @@ public class AuthenticationController(IUserCommandService userCommandService) : 
     {
         var signUpCommand = SignUpCommandFromResourceAssembler.ToCommandFromResource(signUpResource);
         var result = await userCommandService.Handle(signUpCommand, cancellationToken);
-        if (result.IsFailure) return BadRequest(result.Message);
+        if (result.IsFailure) return BadRequest(result.Error.Message);
         return Ok(new { message = "User created successfully" });
     }
 }

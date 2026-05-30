@@ -1,4 +1,5 @@
 using Acme.Center.Platform.Publishing.Application.CommandServices;
+using Acme.Center.Platform.Publishing.Domain.Model;
 using Acme.Center.Platform.Publishing.Domain.Model.Commands;
 using Acme.Center.Platform.Publishing.Domain.Model.Entities;
 using Acme.Center.Platform.Publishing.Domain.Model.Events;
@@ -44,9 +45,9 @@ public class CategoryCommandService(
             // Return the created category
             return Result<Category>.Success(category);
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            return Result<Category>.Failure($"An error occurred while creating the category: {e.Message}");
+            return Result<Category>.Failure(PublishingErrors.CategoryCreationFailed);
         }
     }
 }

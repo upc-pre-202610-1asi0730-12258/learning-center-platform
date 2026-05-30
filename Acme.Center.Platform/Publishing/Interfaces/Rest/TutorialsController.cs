@@ -78,7 +78,7 @@ public class TutorialsController(
     {
         var createTutorialCommand = CreateTutorialCommandFromResourceAssembler.ToCommandFromResource(resource);
         var result = await tutorialCommandService.Handle(createTutorialCommand, cancellationToken);
-        if (result.IsFailure) return BadRequest(result.Message);
+        if (result.IsFailure) return BadRequest(result.Error.Message);
         var tutorial = result.Value;
         var tutorialResource = TutorialResourceFromEntityAssembler.ToResourceFromEntity(tutorial);
         return CreatedAtAction(nameof(GetTutorialById), new { tutorialId = tutorial.Id }, tutorialResource);
@@ -113,7 +113,7 @@ public class TutorialsController(
         var addVideoAssetToTutorialCommand =
             AddVideoAssetToTutorialCommandFromResourceAssembler.ToCommandFromResource(resource, tutorialId);
         var result = await tutorialCommandService.Handle(addVideoAssetToTutorialCommand, cancellationToken);
-        if (result.IsFailure) return BadRequest(result.Message);
+        if (result.IsFailure) return BadRequest(result.Error.Message);
         var tutorial = result.Value;
         var tutorialResource = TutorialResourceFromEntityAssembler.ToResourceFromEntity(tutorial);
         return CreatedAtAction(nameof(GetTutorialById), new { tutorialId = tutorial.Id }, tutorialResource);

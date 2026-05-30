@@ -1,4 +1,5 @@
 using Acme.Center.Platform.Iam.Application.Internal.OutboundServices;
+using Acme.Center.Platform.Iam.Domain.Model;
 using Acme.Center.Platform.Iam.Domain.Model.Aggregates;
 using Acme.Center.Platform.Iam.Domain.Model.Commands;
 using Acme.Center.Platform.Iam.Domain.Repositories;
@@ -36,7 +37,7 @@ public class UserCommandService(
         var user = await userRepository.FindByUsernameAsync(command.Username, cancellationToken);
 
         if (user == null || !hashingService.VerifyPassword(command.Password, user.PasswordHash))
-            return Result<(User user, string token)>.Failure("Invalid username or password");
+            return Result<(User user, string token)>.Failure(IamErrors.InvalidCredentials);
 
         var token = tokenService.GenerateToken(user);
 
@@ -54,7 +55,7 @@ public class UserCommandService(
     public async Task<Result> Handle(SignUpCommand command, CancellationToken cancellationToken)
     {
         if (userRepository.ExistsByUsername(command.Username, cancellationToken))
-            return Result.Failure($"Username {command.Username} is already taken");
+            return Result.Failure(IamErrors.UsernameAlreadyTaken);
 
         var hashedPassword = hashingService.HashPassword(command.Password);
         var user = new User(command.Username, hashedPassword);
@@ -64,9 +65,9 @@ public class UserCommandService(
             await unitOfWork.CompleteAsync(cancellationToken);
             return Result.Success();
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            return Result.Failure($"An error occurred while creating user: {e.Message}");
+            return Result.Failure(IamErrors.UserCreationFailed);
         }
     }
 }

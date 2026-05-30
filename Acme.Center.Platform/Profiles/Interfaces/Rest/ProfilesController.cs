@@ -43,7 +43,7 @@ public class ProfilesController(
     {
         var createProfileCommand = CreateProfileCommandFromResourceAssembler.ToCommandFromResource(resource);
         var result = await profileCommandService.Handle(createProfileCommand, cancellationToken);
-        if (result.IsFailure) return BadRequest(result.Message);
+        if (result.IsFailure) return BadRequest(result.Error.Message);
         var profile = result.Value;
         var profileResource = ProfileResourceFromEntityAssembler.ToResourceFromEntity(profile);
         return CreatedAtAction(nameof(GetProfileById), new { profileId = profile.Id }, profileResource);
