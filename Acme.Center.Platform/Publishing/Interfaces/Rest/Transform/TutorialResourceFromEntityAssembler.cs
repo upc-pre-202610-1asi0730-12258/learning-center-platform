@@ -1,6 +1,7 @@
 using Acme.Center.Platform.Publishing.Domain.Model.Aggregate;
 using Acme.Center.Platform.Publishing.Interfaces.Rest.Resources;
-using Microsoft.OpenApi.Extensions;
+using Microsoft.OpenApi;
+
 
 namespace Acme.Center.Platform.Publishing.Interfaces.Rest.Transform;
 
