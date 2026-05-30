@@ -1,6 +1,6 @@
-@ACME.LearningCenterPlatform.API_HostAddress = http://localhost:5191
+@Acme.Center.Platform_HostAddress = http://localhost:5191
 
-GET {{ACME.LearningCenterPlatform.API_HostAddress}}/weatherforecast/
+GET {{Acme.Center.Platform_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###

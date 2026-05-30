@@ -3,7 +3,7 @@ using Acme.Center.Platform.Profiles.Application.QueryServices;
 using Acme.Center.Platform.Profiles.Domain.Model.Commands;
 using Acme.Center.Platform.Profiles.Domain.Model.Queries;
 using Acme.Center.Platform.Profiles.Domain.Model.ValueObjects;
-using Acme.Center.Platform.Profiles.Interfaces.ACL;
+using Acme.Center.Platform.Profiles.Interfaces.Acl;
 
 namespace Acme.Center.Platform.Profiles.Application.ACL;
 
