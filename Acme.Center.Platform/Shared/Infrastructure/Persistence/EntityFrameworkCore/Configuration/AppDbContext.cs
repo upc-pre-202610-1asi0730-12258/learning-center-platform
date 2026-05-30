@@ -2,7 +2,7 @@ using Acme.Center.Platform.Iam.Infrastructure.Persistence.EntityFrameworkCore.Co
 using Acme.Center.Platform.Profiles.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using Acme.Center.Platform.Publishing.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using Acme.Center.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
-using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
+using Acme.Center.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Interceptors;
 using Microsoft.EntityFrameworkCore;
 
 namespace Acme.Center.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration;
@@ -15,21 +15,13 @@ namespace Acme.Center.Platform.Shared.Infrastructure.Persistence.EntityFramework
 /// </param>
 public class AppDbContext(DbContextOptions options) : DbContext(options)
 {
-   /// <summary>
-   ///     On configuring the database context
-   /// </summary>
-   /// <remarks>
-   ///     This method is used to configure the database context.
-   ///     It also adds the created and updated date interceptor to the database context.
-   /// </remarks>
-   /// <param name="builder">
-   ///     The option builder for the database context
-   /// </param>
-   protected override void OnConfiguring(DbContextOptionsBuilder builder)
+    /// <inheritdoc />
+    protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
-        builder.AddCreatedUpdatedInterceptor();
+        // Apply audit timestamp interceptor for all IAuditableEntity implementations
+        builder.AddInterceptors(new AuditableEntityInterceptor());
         base.OnConfiguring(builder);
-    }
+    } 
 
    /// <summary>
    ///     On creating the database model
