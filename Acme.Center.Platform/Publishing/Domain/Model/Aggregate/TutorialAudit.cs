@@ -1,10 +1,9 @@
-using System.ComponentModel.DataAnnotations.Schema;
-using EntityFrameworkCore.CreatedUpdatedDate.Contracts;
+using Acme.Center.Platform.Shared.Domain.Model.Entities;
 
 namespace Acme.Center.Platform.Publishing.Domain.Model.Aggregate;
 
-public partial class Tutorial : IEntityWithCreatedUpdatedDate
+public partial class Tutorial : IAuditableEntity
 {
-    [Column("CreatedAt")] public DateTimeOffset? CreatedDate { get; set; }
-    [Column("UpdatedAt")] public DateTimeOffset? UpdatedDate { get; set; }
+    public DateTimeOffset? CreatedAt { get; set; }
+    public DateTimeOffset? UpdatedAt { get; set; }
 }
