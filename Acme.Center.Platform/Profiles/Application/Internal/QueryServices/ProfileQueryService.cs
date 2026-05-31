@@ -2,9 +2,6 @@ using Acme.Center.Platform.Profiles.Application.QueryServices;
 using Acme.Center.Platform.Profiles.Domain.Model.Aggregates;
 using Acme.Center.Platform.Profiles.Domain.Model.Queries;
 using Acme.Center.Platform.Profiles.Domain.Repositories;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Acme.Center.Platform.Profiles.Application.Internal.QueryServices;
 

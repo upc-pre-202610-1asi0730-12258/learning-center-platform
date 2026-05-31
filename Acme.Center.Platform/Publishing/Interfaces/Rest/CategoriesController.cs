@@ -1,18 +1,18 @@
 using System.Net.Mime;
 using Acme.Center.Platform.Publishing.Application.CommandServices;
 using Acme.Center.Platform.Publishing.Application.QueryServices;
+using Acme.Center.Platform.Publishing.Domain.Model;
 using Acme.Center.Platform.Publishing.Domain.Model.Queries;
 using Acme.Center.Platform.Publishing.Interfaces.Rest.Resources;
 using Acme.Center.Platform.Publishing.Interfaces.Rest.Transform;
+using Acme.Center.Platform.Resources.Errors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Localization; // For IStringLocalizer
-using Acme.Center.Platform.Resources.Errors; // For ErrorMessages resource
-using Acme.Center.Platform.Publishing.Domain.Model; // For PublishingError enum
+// For IStringLocalizer
+// For ErrorMessages resource
+
+// For PublishingError enum
 
 namespace Acme.Center.Platform.Publishing.Interfaces.Rest;
 
@@ -59,13 +59,11 @@ public class CategoriesController(
         var getCategoryByIdQuery = new GetCategoryByIdQuery(categoryId);
         var category = await categoryQueryService.Handle(getCategoryByIdQuery, cancellationToken);
         if (category is null)
-        {
             return Problem(
                 statusCode: StatusCodes.Status404NotFound,
                 title: _localizer[nameof(PublishingError.CategoryNotFound)],
                 detail: _localizer[nameof(PublishingError.CategoryNotFound)]
             );
-        }
         var resource = CategoryResourceFromEntityAssembler.ToResourceFromEntity(category);
         return Ok(resource);
     }
@@ -87,7 +85,8 @@ public class CategoriesController(
         OperationId = "CreateCategory")]
     [SwaggerResponse(StatusCodes.Status201Created, "The category was created", typeof(CategoryResource))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "The category could not be created")]
-    public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryResource resource, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryResource resource,
+        CancellationToken cancellationToken)
     {
         var createCategoryCommand = CreateCategoryCommandFromResourceAssembler.ToCommandFromResource(resource);
         var result = await categoryCommandService.Handle(createCategoryCommand, cancellationToken);
@@ -106,6 +105,7 @@ public class CategoriesController(
                 detail: result.Message
             );
         }
+
         var category = result.Value;
         var categoryResource = CategoryResourceFromEntityAssembler.ToResourceFromEntity(category);
         return CreatedAtAction(nameof(GetCategoryById), new { categoryId = category.Id }, categoryResource);

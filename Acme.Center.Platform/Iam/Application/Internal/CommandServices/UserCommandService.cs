@@ -1,17 +1,18 @@
 using Acme.Center.Platform.Iam.Application.CommandServices;
 using Acme.Center.Platform.Iam.Application.Internal.OutboundServices;
-using Acme.Center.Platform.Iam.Domain.Model; // For IamError enum
+using Acme.Center.Platform.Iam.Domain.Model;
 using Acme.Center.Platform.Iam.Domain.Model.Aggregates;
 using Acme.Center.Platform.Iam.Domain.Model.Commands;
 using Acme.Center.Platform.Iam.Domain.Repositories;
+using Acme.Center.Platform.Resources.Errors;
 using Acme.Center.Platform.Shared.Application.Model;
 using Acme.Center.Platform.Shared.Domain.Repositories;
-using Microsoft.Extensions.Localization; // For IStringLocalizer
-using Acme.Center.Platform.Resources.Errors; // For ErrorMessages resource
-using Microsoft.EntityFrameworkCore; // For DbUpdateException
-using System.Threading;
-using System.Threading.Tasks;
-using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
+// For IamError enum
+// For IStringLocalizer
+// For ErrorMessages resource
+// For DbUpdateException
 
 namespace Acme.Center.Platform.Iam.Application.Internal.CommandServices;
 
@@ -41,12 +42,14 @@ public class UserCommandService(
      * <param name="cancellationToken">The cancellation token</param>
      * <returns>The authenticated user and the JWT token</returns>
      */
-    public async Task<Result<(User user, string token)>> Handle(SignInCommand command, CancellationToken cancellationToken)
+    public async Task<Result<(User user, string token)>> Handle(SignInCommand command,
+        CancellationToken cancellationToken)
     {
         var user = await userRepository.FindByUsernameAsync(command.Username, cancellationToken);
 
         if (user == null || !hashingService.VerifyPassword(command.Password, user.PasswordHash))
-            return Result<(User user, string token)>.Failure(IamError.InvalidCredentials, _localizer[nameof(IamError.InvalidCredentials)]);
+            return Result<(User user, string token)>.Failure(IamError.InvalidCredentials,
+                _localizer[nameof(IamError.InvalidCredentials)]);
 
         var token = tokenService.GenerateToken(user);
 
@@ -57,14 +60,15 @@ public class UserCommandService(
      * <summary>
      *     Handle sign up command
      * </summary>
-     * <param name="command">The sign up command</param>
+     * <param name="command">The sign-up command</param>
      * <param name="cancellationToken">The cancellation token</param>
      * <returns>A confirmation message on successful creation.</returns>
      */
     public async Task<Result> Handle(SignUpCommand command, CancellationToken cancellationToken)
     {
-        if (await userRepository.ExistsByUsername(command.Username, cancellationToken))
-            return Result.Failure(IamError.UsernameAlreadyTaken, _localizer[nameof(IamError.UsernameAlreadyTaken), command.Username]);
+        if (userRepository.ExistsByUsername(command.Username, cancellationToken))
+            return Result.Failure(IamError.UsernameAlreadyTaken,
+                _localizer[nameof(IamError.UsernameAlreadyTaken), command.Username]);
 
         var hashedPassword = hashingService.HashPassword(command.Password);
         var user = new User(command.Username, hashedPassword);

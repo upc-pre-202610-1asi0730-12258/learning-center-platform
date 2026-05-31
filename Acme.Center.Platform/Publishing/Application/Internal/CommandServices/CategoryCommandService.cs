@@ -1,18 +1,19 @@
 using Acme.Center.Platform.Publishing.Application.CommandServices;
-using Acme.Center.Platform.Publishing.Domain.Model; // For PublishingError enum
+using Acme.Center.Platform.Publishing.Domain.Model;
 using Acme.Center.Platform.Publishing.Domain.Model.Commands;
 using Acme.Center.Platform.Publishing.Domain.Model.Entities;
 using Acme.Center.Platform.Publishing.Domain.Model.Events;
 using Acme.Center.Platform.Publishing.Domain.Repositories;
+using Acme.Center.Platform.Resources.Errors;
 using Acme.Center.Platform.Shared.Application.Model;
 using Acme.Center.Platform.Shared.Domain.Repositories;
 using Cortex.Mediator;
-using Microsoft.Extensions.Localization; // For IStringLocalizer
-using Acme.Center.Platform.Resources.Errors; // For ErrorMessages resource
-using Microsoft.EntityFrameworkCore; // For DbUpdateException
-using System.Threading;
-using System.Threading.Tasks;
-using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
+// For PublishingError enum
+// For IStringLocalizer
+// For ErrorMessages resource
+// For DbUpdateException
 
 namespace Acme.Center.Platform.Publishing.Application.Internal.CommandServices;
 
@@ -54,17 +55,20 @@ public class CategoryCommandService(
         }
         catch (OperationCanceledException)
         {
-            return Result<Category>.Failure(PublishingError.OperationCancelled, _localizer[nameof(PublishingError.OperationCancelled)]);
+            return Result<Category>.Failure(PublishingError.OperationCancelled,
+                _localizer[nameof(PublishingError.OperationCancelled)]);
         }
         catch (DbUpdateException)
         {
             // Log the exception details here if an ILogger is injected
-            return Result<Category>.Failure(PublishingError.DatabaseError, _localizer[nameof(PublishingError.DatabaseError)]);
+            return Result<Category>.Failure(PublishingError.DatabaseError,
+                _localizer[nameof(PublishingError.DatabaseError)]);
         }
         catch (Exception)
         {
             // Log the exception details here if an ILogger is injected
-            return Result<Category>.Failure(PublishingError.InternalServerError, _localizer[nameof(PublishingError.InternalServerError)]);
+            return Result<Category>.Failure(PublishingError.InternalServerError,
+                _localizer[nameof(PublishingError.InternalServerError)]);
         }
     }
 }

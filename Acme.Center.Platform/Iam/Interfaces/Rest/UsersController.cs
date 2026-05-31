@@ -1,18 +1,18 @@
 using System.Net.Mime;
+using Acme.Center.Platform.Iam.Application.QueryServices;
+using Acme.Center.Platform.Iam.Domain.Model;
 using Acme.Center.Platform.Iam.Domain.Model.Queries;
 using Acme.Center.Platform.Iam.Infrastructure.Pipeline.Middleware.Attributes;
 using Acme.Center.Platform.Iam.Interfaces.Rest.Resources;
 using Acme.Center.Platform.Iam.Interfaces.Rest.Transform;
+using Acme.Center.Platform.Resources.Errors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Acme.Center.Platform.Iam.Application.QueryServices;
-using Microsoft.Extensions.Localization; // For IStringLocalizer
-using Acme.Center.Platform.Resources.Errors; // For ErrorMessages resource
-using Acme.Center.Platform.Iam.Domain.Model; // For IamError enum
+// For IStringLocalizer
+// For ErrorMessages resource
+
+// For IamError enum
 
 namespace Acme.Center.Platform.Iam.Interfaces.Rest;
 
@@ -56,14 +56,12 @@ public class UsersController(
         var getUserByIdQuery = new GetUserByIdQuery(id);
         var user = await userQueryService.Handle(getUserByIdQuery, cancellationToken);
         if (user is null)
-        {
             return Problem(
                 statusCode: StatusCodes.Status404NotFound,
                 title: _localizer[nameof(IamError.UserNotFound)],
                 detail: _localizer[nameof(IamError.UserNotFound)]
             );
-        }
-        var userResource = UserResourceFromEntityAssembler.ToResourceFromEntity(user!);
+        var userResource = UserResourceFromEntityAssembler.ToResourceFromEntity(user);
         return Ok(userResource);
     }
 

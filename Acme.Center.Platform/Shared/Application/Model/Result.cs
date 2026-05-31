@@ -1,4 +1,4 @@
-using System; // Added for Enum
+// Added for Enum
 
 namespace Acme.Center.Platform.Shared.Application.Model;
 

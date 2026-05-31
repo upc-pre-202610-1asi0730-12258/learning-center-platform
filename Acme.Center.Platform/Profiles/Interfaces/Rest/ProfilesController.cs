@@ -1,18 +1,18 @@
 using System.Net.Mime;
 using Acme.Center.Platform.Profiles.Application.CommandServices;
 using Acme.Center.Platform.Profiles.Application.QueryServices;
+using Acme.Center.Platform.Profiles.Domain.Model;
 using Acme.Center.Platform.Profiles.Domain.Model.Queries;
 using Acme.Center.Platform.Profiles.Interfaces.Rest.Resources;
 using Acme.Center.Platform.Profiles.Interfaces.Rest.Transform;
+using Acme.Center.Platform.Resources.Errors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Localization; // For IStringLocalizer
-using Acme.Center.Platform.Resources.Errors; // For ErrorMessages resource
-using Acme.Center.Platform.Profiles.Domain.Model; // For ProfilesError enum
+// For IStringLocalizer
+// For ErrorMessages resource
+
+// For ProfilesError enum
 
 namespace Acme.Center.Platform.Profiles.Interfaces.Rest;
 
@@ -37,13 +37,11 @@ public class ProfilesController(
         var getProfileByIdQuery = new GetProfileByIdQuery(profileId);
         var profile = await profileQueryService.Handle(getProfileByIdQuery, cancellationToken);
         if (profile is null)
-        {
             return Problem(
                 statusCode: StatusCodes.Status404NotFound,
                 title: _localizer[nameof(ProfilesError.ProfileNotFound)],
                 detail: _localizer[nameof(ProfilesError.ProfileNotFound)]
             );
-        }
         var profileResource = ProfileResourceFromEntityAssembler.ToResourceFromEntity(profile);
         return Ok(profileResource);
     }
@@ -72,6 +70,7 @@ public class ProfilesController(
                 detail: result.Message
             );
         }
+
         var profile = result.Value;
         var profileResource = ProfileResourceFromEntityAssembler.ToResourceFromEntity(profile);
         return CreatedAtAction(nameof(GetProfileById), new { profileId = profile.Id }, profileResource);

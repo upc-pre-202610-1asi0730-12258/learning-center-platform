@@ -1,16 +1,17 @@
 using Acme.Center.Platform.Profiles.Application.CommandServices;
-using Acme.Center.Platform.Profiles.Domain.Model; // For ProfilesError enum
+using Acme.Center.Platform.Profiles.Domain.Model;
 using Acme.Center.Platform.Profiles.Domain.Model.Aggregates;
 using Acme.Center.Platform.Profiles.Domain.Model.Commands;
 using Acme.Center.Platform.Profiles.Domain.Repositories;
+using Acme.Center.Platform.Resources.Errors;
 using Acme.Center.Platform.Shared.Application.Model;
 using Acme.Center.Platform.Shared.Domain.Repositories;
-using Microsoft.Extensions.Localization; // For IStringLocalizer
-using Acme.Center.Platform.Resources.Errors; // For ErrorMessages resource
-using Microsoft.EntityFrameworkCore; // For DbUpdateException
-using System.Threading;
-using System.Threading.Tasks;
-using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
+// For ProfilesError enum
+// For IStringLocalizer
+// For ErrorMessages resource
+// For DbUpdateException
 
 namespace Acme.Center.Platform.Profiles.Application.Internal.CommandServices;
 
@@ -43,17 +44,20 @@ public class ProfileCommandService(
         }
         catch (OperationCanceledException)
         {
-            return Result<Profile>.Failure(ProfilesError.OperationCancelled, _localizer[nameof(ProfilesError.OperationCancelled)]);
+            return Result<Profile>.Failure(ProfilesError.OperationCancelled,
+                _localizer[nameof(ProfilesError.OperationCancelled)]);
         }
         catch (DbUpdateException)
         {
             // Log the exception details here if an ILogger is injected
-            return Result<Profile>.Failure(ProfilesError.DatabaseError, _localizer[nameof(ProfilesError.DatabaseError)]);
+            return Result<Profile>.Failure(ProfilesError.DatabaseError,
+                _localizer[nameof(ProfilesError.DatabaseError)]);
         }
         catch (Exception)
         {
             // Log the exception details here if an ILogger is injected
-            return Result<Profile>.Failure(ProfilesError.InternalServerError, _localizer[nameof(ProfilesError.InternalServerError)]);
+            return Result<Profile>.Failure(ProfilesError.InternalServerError,
+                _localizer[nameof(ProfilesError.InternalServerError)]);
         }
     }
 }

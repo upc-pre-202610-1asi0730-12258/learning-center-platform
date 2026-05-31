@@ -1,15 +1,17 @@
 using System.Net.Mime;
+using Acme.Center.Platform.Iam.Application.CommandServices;
+using Acme.Center.Platform.Iam.Domain.Model;
 using Acme.Center.Platform.Iam.Infrastructure.Pipeline.Middleware.Attributes;
 using Acme.Center.Platform.Iam.Interfaces.Rest.Resources;
 using Acme.Center.Platform.Iam.Interfaces.Rest.Transform;
+using Acme.Center.Platform.Resources.Errors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Threading;
-using System.Threading.Tasks;
-using Acme.Center.Platform.Iam.Application.CommandServices;
-using Acme.Center.Platform.Iam.Domain.Model; // For IamError enum
-using Microsoft.Extensions.Localization; // For IStringLocalizer
-using Acme.Center.Platform.Resources.Errors; // For ErrorMessages resource
+// For IamError enum
+// For IStringLocalizer
+
+// For ErrorMessages resource
 
 namespace Acme.Center.Platform.Iam.Interfaces.Rest;
 
@@ -41,7 +43,8 @@ public class AuthenticationController(
         OperationId = "SignIn")]
     [SwaggerResponse(StatusCodes.Status200OK, "The user was authenticated", typeof(AuthenticatedUserResource))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid username or password")]
-    public async Task<IActionResult> SignIn([FromBody] SignInResource signInResource, CancellationToken cancellationToken)
+    public async Task<IActionResult> SignIn([FromBody] SignInResource signInResource,
+        CancellationToken cancellationToken)
     {
         var signInCommand = SignInCommandFromResourceAssembler.ToCommandFromResource(signInResource);
         var result = await userCommandService.Handle(signInCommand, cancellationToken);
@@ -58,6 +61,7 @@ public class AuthenticationController(
                 detail: result.Message // Use the localized message from the service
             );
         }
+
         var authenticatedUser = result.Value;
         var resource =
             AuthenticatedUserResourceFromEntityAssembler.ToResourceFromEntity(authenticatedUser.user,
@@ -81,7 +85,8 @@ public class AuthenticationController(
         OperationId = "SignUp")]
     [SwaggerResponse(StatusCodes.Status200OK, "The user was created successfully")]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "The user was not created")]
-    public async Task<IActionResult> SignUp([FromBody] SignUpResource signUpResource, CancellationToken cancellationToken)
+    public async Task<IActionResult> SignUp([FromBody] SignUpResource signUpResource,
+        CancellationToken cancellationToken)
     {
         var signUpCommand = SignUpCommandFromResourceAssembler.ToCommandFromResource(signUpResource);
         var result = await userCommandService.Handle(signUpCommand, cancellationToken);
@@ -101,6 +106,7 @@ public class AuthenticationController(
                 detail: result.Message // Use the localized message from the service
             );
         }
+
         return Ok(new { message = _localizer["UserCreatedSuccessfully"] }); // Assuming a generic success message
     }
 }

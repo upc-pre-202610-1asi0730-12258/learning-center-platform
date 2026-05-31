@@ -1,8 +1,6 @@
 using Acme.Center.Platform.Profiles.Domain.Model.Aggregates;
 using Acme.Center.Platform.Profiles.Domain.Model.Commands;
 using Acme.Center.Platform.Shared.Application.Model;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Acme.Center.Platform.Profiles.Application.CommandServices;
 

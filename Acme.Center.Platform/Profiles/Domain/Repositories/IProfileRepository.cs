@@ -1,8 +1,6 @@
 using Acme.Center.Platform.Profiles.Domain.Model.Aggregates;
 using Acme.Center.Platform.Profiles.Domain.Model.ValueObjects;
 using Acme.Center.Platform.Shared.Domain.Repositories;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Acme.Center.Platform.Profiles.Domain.Repositories;
 

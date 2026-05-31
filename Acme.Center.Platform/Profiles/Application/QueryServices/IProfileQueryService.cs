@@ -1,8 +1,5 @@
 using Acme.Center.Platform.Profiles.Domain.Model.Aggregates;
 using Acme.Center.Platform.Profiles.Domain.Model.Queries;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Acme.Center.Platform.Profiles.Application.QueryServices;
 

@@ -1,18 +1,18 @@
 using System.Net.Mime;
 using Acme.Center.Platform.Publishing.Application.CommandServices;
 using Acme.Center.Platform.Publishing.Application.QueryServices;
+using Acme.Center.Platform.Publishing.Domain.Model;
 using Acme.Center.Platform.Publishing.Domain.Model.Queries;
 using Acme.Center.Platform.Publishing.Interfaces.Rest.Resources;
 using Acme.Center.Platform.Publishing.Interfaces.Rest.Transform;
+using Acme.Center.Platform.Resources.Errors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Localization; // For IStringLocalizer
-using Acme.Center.Platform.Resources.Errors; // For ErrorMessages resource
-using Acme.Center.Platform.Publishing.Domain.Model; // For PublishingError enum
+// For IStringLocalizer
+// For ErrorMessages resource
+
+// For PublishingError enum
 
 namespace Acme.Center.Platform.Publishing.Interfaces.Rest;
 
@@ -59,13 +59,11 @@ public class TutorialsController(
     {
         var tutorial = await tutorialQueryService.Handle(new GetTutorialByIdQuery(tutorialId), cancellationToken);
         if (tutorial is null)
-        {
             return Problem(
                 statusCode: StatusCodes.Status404NotFound,
                 title: _localizer[nameof(PublishingError.TutorialNotFound)],
                 detail: _localizer[nameof(PublishingError.TutorialNotFound)]
             );
-        }
         var tutorialResource = TutorialResourceFromEntityAssembler.ToResourceFromEntity(tutorial);
         return Ok(tutorialResource);
     }
@@ -88,7 +86,8 @@ public class TutorialsController(
         OperationId = "CreateTutorial")]
     [SwaggerResponse(StatusCodes.Status201Created, "The tutorial was created", typeof(TutorialResource))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "The tutorial was not created")]
-    public async Task<IActionResult> CreateTutorial([FromBody] CreateTutorialResource resource, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateTutorial([FromBody] CreateTutorialResource resource,
+        CancellationToken cancellationToken)
     {
         var createTutorialCommand = CreateTutorialCommandFromResourceAssembler.ToCommandFromResource(resource);
         var result = await tutorialCommandService.Handle(createTutorialCommand, cancellationToken);
@@ -109,6 +108,7 @@ public class TutorialsController(
                 detail: result.Message
             );
         }
+
         var tutorial = result.Value;
         var tutorialResource = TutorialResourceFromEntityAssembler.ToResourceFromEntity(tutorial);
         return CreatedAtAction(nameof(GetTutorialById), new { tutorialId = tutorial.Id }, tutorialResource);
@@ -159,6 +159,7 @@ public class TutorialsController(
                 detail: result.Message
             );
         }
+
         var tutorial = result.Value;
         var tutorialResource = TutorialResourceFromEntityAssembler.ToResourceFromEntity(tutorial);
         return CreatedAtAction(nameof(GetTutorialById), new { tutorialId = tutorial.Id }, tutorialResource);

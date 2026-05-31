@@ -1,9 +1,7 @@
 using Acme.Center.Platform.Iam.Application.Internal.OutboundServices;
+using Acme.Center.Platform.Iam.Application.QueryServices;
 using Acme.Center.Platform.Iam.Domain.Model.Queries;
 using Acme.Center.Platform.Iam.Infrastructure.Pipeline.Middleware.Attributes;
-using System.Threading;
-using System.Threading.Tasks;
-using Acme.Center.Platform.Iam.Application.QueryServices;
 
 namespace Acme.Center.Platform.Iam.Infrastructure.Pipeline.Middleware.Components;
 

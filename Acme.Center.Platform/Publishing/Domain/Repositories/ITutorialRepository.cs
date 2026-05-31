@@ -1,8 +1,5 @@
 using Acme.Center.Platform.Publishing.Domain.Model.Aggregate;
 using Acme.Center.Platform.Shared.Domain.Repositories;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Acme.Center.Platform.Publishing.Domain.Repositories;
 
