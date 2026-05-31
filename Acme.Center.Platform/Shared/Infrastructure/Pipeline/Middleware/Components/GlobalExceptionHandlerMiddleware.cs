@@ -1,6 +1,12 @@
 using System.Net.Mime;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization; // For IStringLocalizer
+using Acme.Center.Platform.Resources.Errors; // For ErrorMessages resource
+using Acme.Center.Platform.Shared.Resources; // For Common resource (if needed)
+using System;
+using System.Threading.Tasks;
+using System.Threading; // For OperationCanceledException
 
 namespace Acme.Center.Platform.Shared.Infrastructure.Pipeline.Middleware.Components;
 
@@ -10,8 +16,15 @@ namespace Acme.Center.Platform.Shared.Infrastructure.Pipeline.Middleware.Compone
 /// <remarks>
 ///     This middleware catches all unhandled exceptions and returns a Problem Details response.
 /// </remarks>
-public class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<GlobalExceptionHandlerMiddleware> logger)
+public class GlobalExceptionHandlerMiddleware(
+    RequestDelegate next,
+    ILogger<GlobalExceptionHandlerMiddleware> logger,
+    IStringLocalizer<ErrorMessages> errorLocalizer, // Inject IStringLocalizer for error messages
+    IStringLocalizer<Common> commonLocalizer) // Inject IStringLocalizer for common messages like "Internal Server Error"
 {
+    private readonly IStringLocalizer<ErrorMessages> _errorLocalizer = errorLocalizer;
+    private readonly IStringLocalizer<Common> _commonLocalizer = commonLocalizer;
+
     /**
      * <summary>
      *     Invoke the middleware
@@ -25,22 +38,54 @@ public class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<Glob
         {
             await next(context);
         }
+        catch (OperationCanceledException ex)
+        {
+            logger.LogWarning(ex, "Request was cancelled: {Message}", ex.Message);
+            await HandleOperationCanceledExceptionAsync(context, ex);
+        }
         catch (Exception ex)
         {
             logger.LogError(ex, "An unhandled exception occurred: {Message}", ex.Message);
-            await HandleExceptionAsync(context, ex);
+            await HandleGenericExceptionAsync(context, ex);
         }
     }
 
     /**
      * <summary>
-     *     Handle the exception
+     *     Handle the OperationCanceledException
      * </summary>
      * <param name="context">The http context</param>
      * <param name="exception">The exception</param>
      * <returns>A task</returns>
      */
-    private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
+    private async Task HandleOperationCanceledExceptionAsync(HttpContext context, OperationCanceledException exception)
+    {
+        context.Response.ContentType = MediaTypeNames.Application.Json;
+        context.Response.StatusCode = StatusCodes.Status409Conflict; // Or 204 No Content if appropriate
+
+        var problemDetails = new ProblemDetails
+        {
+            Status = StatusCodes.Status409Conflict,
+            Title = _errorLocalizer["OperationCancelled"], // Localized title
+            Detail = _errorLocalizer["OperationCancelled"], // Localized detail
+            Instance = context.Request.Path
+        };
+
+        var jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+        var result = JsonSerializer.Serialize(problemDetails, jsonOptions);
+
+        await context.Response.WriteAsync(result);
+    }
+
+    /**
+     * <summary>
+     *     Handle a generic exception
+     * </summary>
+     * <param name="context">The http context</param>
+     * <param name="exception">The exception</param>
+     * <returns>A task</returns>
+     */
+    private async Task HandleGenericExceptionAsync(HttpContext context, Exception exception)
     {
         context.Response.ContentType = MediaTypeNames.Application.Json;
         context.Response.StatusCode = StatusCodes.Status500InternalServerError;
@@ -48,8 +93,8 @@ public class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<Glob
         var problemDetails = new ProblemDetails
         {
             Status = StatusCodes.Status500InternalServerError,
-            Title = "An unexpected error occurred",
-            Detail = exception.Message,
+            Title = _commonLocalizer["InternalServerError"], // Localized title
+            Detail = _errorLocalizer["GenericError"], // Localized generic error message
             Instance = context.Request.Path
         };
 
