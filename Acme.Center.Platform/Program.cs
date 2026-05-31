@@ -42,7 +42,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure; // Added for base ProblemDetailsF
 using Acme.Center.Platform.Iam.Resources; // Added for IamMessages
 using Acme.Center.Platform.Profiles.Resources; // Added for ProfilesMessages
 using Acme.Center.Platform.Publishing.Resources;
-using ProblemDetailsFactory = Acme.Center.Platform.Shared.Interfaces.Rest.ProblemDetails.ProblemDetailsFactory; // Added for PublishingMessages
+using ProblemDetailsFactory = Acme.Center.Platform.Shared.Interfaces.Rest.ProblemDetails.ProblemDetailsFactory;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -155,7 +155,7 @@ builder.Services.Configure<TokenSettings>(builder.Configuration.GetSection("Toke
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserCommandService, UserCommandService>();
-builder.Services.AddScoped<IUserQueryService, UserQueryService>();
+builder.Services.AddScoped<IUserQueryService, IUserQueryService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IHashingService, HashingService>();
 builder.Services.AddScoped<IIamContextFacade, IamContextFacade>();
