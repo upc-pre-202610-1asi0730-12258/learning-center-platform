@@ -189,7 +189,7 @@ MySQL).
     *   Ensure your MySQL server is running.
     *   Update the `DefaultConnection` string in `appsettings.json` (and `appsettings.Development.json`) to point to your MySQL instance.
     *   The application is
- configured to automatically create the database if it doesn't exist on startup (`context.Database.EnsureCreated();`).
+ configured to automatically create the database if it doesn't exist on startup and will apply the needed Migrations.
 
 5.  **Run the application:**
     ```bash
