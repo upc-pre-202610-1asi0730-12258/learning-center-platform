@@ -157,7 +157,7 @@ MySQL).
 *   **System.IdentityModel.Tokens.Jwt**: For JWT generation and validation.
 *   **Swashbuckle.AspNetCore**: For OpenAPI/Swagger documentation.
 *   **Microsoft.Extensions.Localization**: For Internationalization (i18n).
-*   **Humanizer**: For string manipulation (e.g., kebab-case routing).
+*   **Humanizer**: For string manipulation (e.g., snake_case and plural table names).
 
 ## Getting Started
 
