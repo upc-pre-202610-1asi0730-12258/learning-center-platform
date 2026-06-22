@@ -34,6 +34,7 @@ public class GlobalExceptionHandlerMiddleware(
      */
     public async Task InvokeAsync(HttpContext context)
     {
+        CancellationToken cancellationToken = context.RequestAborted;
         try
         {
             await next(context);
