@@ -6,6 +6,7 @@ using Acme.Center.Platform.Publishing.Interfaces.Rest.Resources;
 using Acme.Center.Platform.Publishing.Interfaces.Rest.Transform;
 using Acme.Center.Platform.Resources.Errors;
 using Acme.Center.Platform.Shared.Interfaces.Rest.ProblemDetails;
+using Acme.Center.Platform.Iam.Infrastructure.Pipeline.Middleware.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Swashbuckle.AspNetCore.Annotations;
@@ -16,6 +17,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace Acme.Center.Platform.Publishing.Interfaces.Rest;
 
+[Authorize]
 [ApiController]
 [Route("api/v1/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]
