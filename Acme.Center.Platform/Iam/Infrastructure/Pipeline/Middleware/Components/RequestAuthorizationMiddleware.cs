@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Acme.Center.Platform.Iam.Application.Internal.OutboundServices;
 using Acme.Center.Platform.Iam.Application.QueryServices;
 using Acme.Center.Platform.Iam.Domain.Model.Queries;
@@ -27,8 +28,8 @@ public class RequestAuthorizationMiddleware(RequestDelegate next)
         CancellationToken cancellationToken = context.RequestAborted;
         Console.WriteLine("Entering InvokeAsync");
         // skip authorization if endpoint is decorated with [AllowAnonymous] attribute
-        var allowAnonymous = context.Request.HttpContext.GetEndpoint()!.Metadata
-            .Any(m => m.GetType() == typeof(AllowAnonymousAttribute));
+        var endpoint = context.GetEndpoint();
+        var allowAnonymous = endpoint?.Metadata.Any(m => m.GetType() == typeof(AllowAnonymousAttribute)) ?? false;
         Console.WriteLine($"Allow Anonymous is {allowAnonymous}");
         if (allowAnonymous)
         {
@@ -40,27 +41,39 @@ public class RequestAuthorizationMiddleware(RequestDelegate next)
 
         Console.WriteLine("Entering authorization");
         // get token from request header
-        var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+        var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
+        Console.WriteLine($"Authorization header: {authHeader}");
+        var token = authHeader?.Split(" ").Last();
+        Console.WriteLine($"Extracted token: {token}");
 
 
-        // if token is null then throw exception
-        if (token == null) throw new Exception("Null or invalid token");
+        // if token is null then return unauthorized
+        if (token == null)
+        {
+            Console.WriteLine("Token is null");
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return;
+        }
 
         // validate token
         var userId = await tokenService.ValidateToken(token);
+        Console.WriteLine($"Token validation result: {userId}");
 
-        // if token is invalid then throw exception
-        if (userId == null) throw new Exception("Invalid token");
+        // if token is invalid then return unauthorized
+        if (userId == null)
+        {
+            Console.WriteLine("Token is invalid");
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return;
+        }
 
         // get user by id
         var getUserByIdQuery = new GetUserByIdQuery(userId.Value);
 
         // set user in HttpContext.Items["User"]
-
         var user = await userQueryService.Handle(getUserByIdQuery, cancellationToken);
-        Console.WriteLine("Successful authorization. Updating Context...");
         context.Items["User"] = user;
-        Console.WriteLine("Continuing with Middleware Pipeline");
+        
         // call next middleware
         await next(context);
     }
